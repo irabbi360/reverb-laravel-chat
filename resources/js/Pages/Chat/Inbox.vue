@@ -48,7 +48,6 @@ const sendMessage = () => {
 };
 
 const sendTypingEvent = () => {
-    console.log(props.friend.id, props.currentUser.id, 'type event')
     Echo.private(`chat.${props.friend.id}`).whisper("typing", {
         userID: props.currentUser.id,
     });
@@ -59,14 +58,11 @@ onMounted(() => {
         messages.value = response.data;
     });
 
-    console.log(props.currentUser.id, 'currentUser id')
     Echo.private(`chat.${props.currentUser.id}`)
         .listen("MessageSentEvent", (response) => {
-            console.log(response, 'MessageSentEvent response')
             messages.value.push(response.message);
         })
         .listenForWhisper("typing", (response) => {
-            console.log(response, 'sssss')
             isFriendTyping.value = response.userID === props.friend.id;
 
             if (isFriendTypingTimer.value) {
