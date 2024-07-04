@@ -1,6 +1,7 @@
 <script setup>
 import axios from "axios";
 import {nextTick, onMounted, ref, watch} from "vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const props = defineProps({
     users: {
@@ -85,14 +86,10 @@ onMounted(() => {
 </script>
 
 <template>
+    <AuthenticatedLayout>
     <!-- Messenger Clone -->
-    <div class="h-screen w-full flex antialiased text-gray-200 bg-gray-900 overflow-hidden">
+    <div class="h-screen w-full flex antialiased overflow-hidden">
         <div class="flex-1 flex flex-col">
-            <div class="border-b-2 border-gray-800 p-2 flex flex-row z-20">
-                <div class="bg-red-600 w-3 h-3 rounded-full mr-2"></div>
-                <div class="bg-yellow-500 w-3 h-3 rounded-full mr-2"></div>
-                <div class="bg-green-500 w-3 h-3 rounded-full mr-2"></div>
-            </div>
             <main class="flex-grow flex flex-row min-h-0">
                 <section
                     class="flex flex-col flex-none overflow-auto w-24 hover:w-64 group lg:max-w-sm md:w-2/5 transition-all duration-300 ease-in-out">
@@ -205,7 +202,7 @@ onMounted(() => {
 
                     <div class="contacts p-2 flex-1 overflow-y-scroll">
                         <div v-for="user in users"
-                             class="flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg relative"
+                             class="flex justify-between items-center p-3 hover:bg-gray-300 rounded-lg relative"
                              @click="loadMessages(user)">
                             <div class="w-16 h-16 relative flex flex-shrink-0">
                                 <img class="shadow-md rounded-full w-full h-full object-cover"
@@ -525,6 +522,7 @@ C15.786,7.8,14.8,8.785,14.8,10s0.986,2.2,2.201,2.2S19.2,11.215,19.2,10S18.216,7.
             </main>
         </div>
     </div>
+    </AuthenticatedLayout>
 </template>
 
 <style scoped>
@@ -560,11 +558,11 @@ C15.786,7.8,14.8,8.785,14.8,10s0.986,2.2,2.201,2.2S19.2,11.215,19.2,10S18.216,7.
 }
 
 ::-webkit-scrollbar-thumb:active {
-    background: #000000;
+    //background: #000000;
 }
 
 ::-webkit-scrollbar-track {
-    background: #1a202c;
+    //background: #1a202c;
     border: 0px none #ffffff;
     border-radius: 50px;
 }
