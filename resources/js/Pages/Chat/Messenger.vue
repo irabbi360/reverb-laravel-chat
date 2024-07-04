@@ -36,7 +36,7 @@ watch(
 const sendMessage = () => {
     if (newMessage.value.trim() !== "") {
         axios
-            .post(`/messages/${props.friend.id}`, {
+            .post(`/messages/${selectedUser.value.id}`, {
                 message: newMessage.value,
             })
             .then((response) => {
@@ -47,7 +47,7 @@ const sendMessage = () => {
 };
 
 const sendTypingEvent = () => {
-    Echo.private(`chat.${props.friend.id}`).whisper("typing", {
+    Echo.private(`chat.${selectedUser.value.id}`).whisper("typing", {
         userID: props.currentUser.id,
     });
 };
@@ -61,17 +61,17 @@ const loadMessages = ((user) => {
 })
 
 onMounted(() => {
-    /*axios.get(`/messages/${props.friend.id}`).then((response) => {
+    /*axios.get(`/messages/${selectedUser.value.id}`).then((response) => {
         console.log(response.data);
         messages.value = response.data;
-    });
+    });*/
 
     Echo.private(`chat.${props.currentUser.id}`)
-        .listen("MessageSent", (response) => {
+        .listen("MessageSentEvent", (response) => {
             messages.value.push(response.message);
         })
         .listenForWhisper("typing", (response) => {
-            isFriendTyping.value = response.userID === props.friend.id;
+            isFriendTyping.value = response.userID === selectedUser.value.id;
 
             if (isFriendTypingTimer.value) {
                 clearTimeout(isFriendTypingTimer.value);
@@ -80,7 +80,7 @@ onMounted(() => {
             isFriendTypingTimer.value = setTimeout(() => {
                 isFriendTyping.value = false;
             }, 1000);
-        });*/
+        });
 });
 </script>
 
@@ -359,7 +359,7 @@ C15.786,7.8,14.8,8.785,14.8,10s0.986,2.2,2.201,2.2S19.2,11.215,19.2,10S18.216,7.
                                 </div>-->
                                 <p class="p-4 text-center text-sm text-gray-500">{{ message.created_at }}</p>
 
-                                <div class="flex flex-row" :class="{'justify-end': message.sender_id === currentUser.id}">
+                                <div class="flex flex-row justify-start" :class="{'justify-end': message.sender_id === currentUser.id}">
                                     <div v-if="message.sender_id !== currentUser.id" class="w-8 h-8 relative flex flex-shrink-0 mr-4">
                                         <img class="shadow-md rounded-full w-full h-full object-cover"
                                              src="https://randomuser.me/api/portraits/women/33.jpg"
@@ -367,7 +367,7 @@ C15.786,7.8,14.8,8.785,14.8,10s0.986,2.2,2.201,2.2S19.2,11.215,19.2,10S18.216,7.
                                         />
                                     </div>
                                     <div class="messages text-sm text-white grid grid-flow-row gap-2">
-                                        <div class="flex items-center flex-row-reverse group">
+                                        <div class="flex items-center group" :class="{'flex-row-reverse ' : message.sender_id === currentUser.id}">
                                             <p v-if="message.sender_id === currentUser.id" class="px-6 py-3 rounded-l-full bg-blue-700 max-w-xs lg:max-w-md">{{ message.text }}</p>
                                             <p v-else class="px-6 py-3 rounded-b-full rounded-r-full bg-gray-800 max-w-xs lg:max-w-md text-gray-200">{{ message.text }}</p>
                                             <button type="button"
@@ -455,6 +455,9 @@ C15.786,7.8,14.8,8.785,14.8,10s0.986,2.2,2.201,2.2S19.2,11.215,19.2,10S18.216,7.
                                     </div>
                                 </div>
                             </template>
+                            <div v-if="isFriendTyping" class="flex flex-row text-gray-700">
+                                {{ selectedUser.name }} is typing...
+                            </div>
                         </template>
                         <template v-else>
                             <p class="p-4">Select a user</p>
@@ -494,7 +497,12 @@ C15.786,7.8,14.8,8.785,14.8,10s0.986,2.2,2.201,2.2S19.2,11.215,19.2,10S18.216,7.
                                 <label>
                                     <input
                                         class="rounded-full py-2 pl-3 pr-10 w-full border border-gray-800 focus:border-gray-700 bg-gray-800 focus:bg-gray-900 focus:outline-none text-gray-200 focus:shadow-md transition duration-300 ease-in"
-                                        type="text" value="" placeholder="Aa"/>
+                                        type="text"
+                                        v-model="newMessage"
+                                        @keydown="sendTypingEvent"
+                                        @keyup.enter="sendMessage"
+                                        placeholder="Type a message..."
+                                    />
                                     <button type="button"
                                             class="absolute top-0 right-0 mt-2 mr-3 flex flex-shrink-0 focus:outline-none block text-blue-600 hover:text-blue-700 w-6 h-6">
                                         <svg viewBox="0 0 20 20" class="w-full h-full fill-current">
